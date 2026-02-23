@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+venv/
+.venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+_ANALYSIS/
+*.db
+*.log
+/tmp/
+
+# Models (downloaded at runtime)
+*.pt
+*.pth
+*.onnx
+*.bin

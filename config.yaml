@@ -1,0 +1,232 @@
+# Video Intelligence System - Configuration
+# Adjust paths as needed for your environment
+
+# ============================================================================
+# PATHS
+# ============================================================================
+paths:
+  input: /mnt/video_hub/00_ENTRADA
+  output: /mnt/video_hub/01_PROCESADOS
+  analysis: /mnt/video_hub/_ANALYSIS
+  uploaded: /mnt/video_hub/_SUBIDO_A_NUBE
+  temp: /tmp/video_intelligence
+
+# ============================================================================
+# PROCESSING
+# ============================================================================
+processing:
+  mode: manual
+  batch_size: auto
+  cpu_workers: 36
+  gpu_batch_size: 16
+  small_batch_optimization: true
+  min_videos_for_progress: 5
+
+# ============================================================================
+# MODELS
+# ============================================================================
+models:
+  whisper:
+    model_name: medium
+    device: cuda
+    compute_type: float16
+  clip:
+    model_name: ViT-B-32
+    pretrained: openai
+    device: cuda
+  face:
+    detection_threshold: 0.8
+    device: cuda
+  ocr:
+    languages: [es, en]
+    gpu: true
+    confidence_threshold: 0.5
+
+# ============================================================================
+# ANALYSIS PARAMETERS
+# ============================================================================
+analysis:
+  frames:
+    count_per_video: 30
+    method: uniform
+    save_samples: false
+  face_clustering:
+    algorithm: dbscan
+    eps: 0.6
+    min_samples: 2
+    metric: cosine
+  themes:
+    confidence_threshold: 0.6
+    fallback_theme: Otros
+  audio:
+    enable_transcription: true
+    speech_detection_threshold: 0.3
+    sample_duration: 30
+  text_extraction:
+    enable: true
+    max_frames: 10
+
+# ============================================================================
+# THEMES
+# ============================================================================
+themes:
+  categories:
+    - Comedia
+    - Tutoriales
+    - Sketches
+    - Vlogs
+    - Entrevistas
+    - Outdoor
+    - Producto_Review
+    - Talking_Head
+    - Otros
+  prompts:
+    Comedia:
+      - comedy sketch
+      - funny video
+      - humor content
+      - comedic performance
+      - laughing people
+    Tutoriales:
+      - educational tutorial
+      - how-to video
+      - teaching content
+      - demonstration
+      - instructional video
+    Sketches:
+      - short film
+      - dramatic sketch
+      - acting performance
+      - cinematic scene
+      - scripted content
+    Vlogs:
+      - vlog
+      - personal video diary
+      - daily life video
+      - behind the scenes
+      - casual talking
+    Entrevistas:
+      - interview
+      - conversation
+      - two people talking
+      - q and a
+      - discussion
+    Outdoor:
+      - outdoor scene
+      - nature video
+      - outside
+      - landscape
+      - street scene
+    Producto_Review:
+      - product review
+      - unboxing
+      - product demonstration
+      - showcase item
+    Talking_Head:
+      - person talking to camera
+      - direct address
+      - single person speaking
+      - monologue video
+
+# ============================================================================
+# FILE ORGANIZATION
+# ============================================================================
+organization:
+  operation: move
+  create_backup: false
+  month_names:
+    1: Enero
+    2: Febrero
+    3: Marzo
+    4: Abril
+    5: Mayo
+    6: Junio
+    7: Julio
+    8: Agosto
+    9: Septiembre
+    10: Octubre
+    11: Noviembre
+    12: Diciembre
+  date_sources:
+    - exif
+    - filename
+    - file_modified
+  no_date_folder: Sin_Fecha
+  special_folders:
+    duplicates: _ESPECIALES/Duplicados
+    long_videos: _ESPECIALES/Videos_Largos_3min+
+    review_needed: _ESPECIALES/Revisar_Manual
+
+# ============================================================================
+# DUPLICATE DETECTION
+# ============================================================================
+duplicates:
+  enable: true
+  action: move_to_folder
+  method: hash_only
+
+# ============================================================================
+# THUMBNAILS
+# ============================================================================
+thumbnails:
+  generate_video_thumbs: true
+  video_thumb_size: [320, 180]
+  generate_face_thumbs: true
+  face_thumb_size: [128, 128]
+  quality: 85
+
+# ============================================================================
+# REPORTING
+# ============================================================================
+reporting:
+  generate_text_report: true
+  generate_csv_export: true
+  keep_history: true
+  detail_level: normal
+
+# ============================================================================
+# LOGGING
+# ============================================================================
+logging:
+  level: INFO
+  file_logging: true
+  log_dir: _ANALYSIS/logs
+  max_bytes: 10485760
+  backup_count: 5
+  console_logging: true
+  console_level: INFO
+
+# ============================================================================
+# DATABASE
+# ============================================================================
+database:
+  path: _ANALYSIS/database/analysis.db
+  wal_mode: true
+  vacuum_on_startup: false
+  auto_backup: true
+  backup_dir: _ANALYSIS/database/backups
+
+# ============================================================================
+# PERFORMANCE
+# ============================================================================
+performance:
+  gpu:
+    memory_fraction: 0.9
+    allow_growth: true
+  cpu:
+    max_workers: 36
+    reserve_cores: 2
+  batch:
+    video_batch_size: 10
+    frame_batch_size: 32
+    embedding_batch_size: 64
+
+# ============================================================================
+# ERROR HANDLING
+# ============================================================================
+error_handling:
+  continue_on_error: true
+  max_errors_per_batch: 10
+  retry_on_failure: false
+  max_retries: 1
+  move_failed_videos: true
