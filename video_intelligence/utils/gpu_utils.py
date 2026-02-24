@@ -19,7 +19,7 @@ def get_device() -> str:
 
         if torch.cuda.is_available():
             device_name = torch.cuda.get_device_name(0)
-            vram_gb = torch.cuda.get_device_properties(0).total_mem / (1024**3)
+            vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
             logger.info("GPU detected: %s (%.1f GB VRAM)", device_name, vram_gb)
             return "cuda"
     except ImportError:
@@ -41,7 +41,7 @@ def get_gpu_memory_info() -> Optional[dict]:
         if not torch.cuda.is_available():
             return None
 
-        total = torch.cuda.get_device_properties(0).total_mem / (1024**3)
+        total = torch.cuda.get_device_properties(0).total_memory / (1024**3)
         reserved = torch.cuda.memory_reserved(0) / (1024**3)
         allocated = torch.cuda.memory_allocated(0) / (1024**3)
         free = total - allocated

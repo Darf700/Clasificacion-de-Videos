@@ -56,7 +56,7 @@ class TestFaceDetector:
             [120, 200],  # left_mouth
             [180, 200],  # right_mouth
         ], dtype=np.float32)
-        assert detector._estimate_frontal(det, 100, 130) is True
+        assert detector._estimate_frontal(det, 100, 130) == True
 
     def test_non_frontal_with_asymmetric_landmarks(self, detector):
         det = MagicMock()
@@ -67,7 +67,7 @@ class TestFaceDetector:
             [120, 200],
             [180, 200],
         ], dtype=np.float32)
-        assert detector._estimate_frontal(det, 100, 130) is False
+        assert detector._estimate_frontal(det, 100, 130) == False
 
     def test_frontal_fallback_bbox_ratio(self, detector):
         """Without landmarks, use bbox aspect ratio."""
