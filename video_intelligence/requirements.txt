@@ -1,0 +1,43 @@
+# ============================================================================
+# Video Intelligence System - Python Dependencies
+# ============================================================================
+# NOTE: PyTorch + CUDA and CLIP are installed separately by install.sh.
+#       Do NOT run `pip install -r requirements.txt` directly — use install.sh.
+# ============================================================================
+
+# Core ML/AI
+# torch, torchvision, torchaudio — installed by install.sh with CUDA index
+transformers==4.36.0
+openai-whisper==20231117
+
+# Computer Vision & Face Analysis
+opencv-python==4.8.1.78
+insightface==0.7.3
+onnxruntime-gpu==1.16.3
+
+# OCR
+easyocr==1.7.0
+
+# CLIP dependencies (clip itself installed from GitHub by install.sh)
+ftfy==6.1.3
+regex==2023.10.3
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.2
+scikit-learn==1.3.2
+scipy==1.11.4
+
+# Image Processing
+pillow==10.1.0
+
+# Video/Media
+ffmpeg-python==0.2.0
+
+# Utilities
+tqdm==4.66.1
+pyyaml==6.0.1
+python-dateutil==2.8.2
+
+# Logging
+colorlog==6.8.0

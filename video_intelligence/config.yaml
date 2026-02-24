@@ -1,0 +1,348 @@
+# Video Intelligence System - Configuration
+# Copy this file to config.yaml and adjust paths as needed
+
+# ============================================================================
+# PATHS
+# ============================================================================
+paths:
+  # Input folder - where new videos are placed for processing
+  input: /mnt/video_hub/00_ENTRADA
+
+  # Output folder - organized videos (Year/Month/Theme)
+  output: /mnt/video_hub/01_PROCESADOS
+
+  # Analysis folder - database, thumbnails, reports
+  analysis: /mnt/video_hub/_ANALYSIS
+
+  # Uploaded folder - videos already in iCloud (safe to delete)
+  uploaded: /mnt/video_hub/_SUBIDO_A_NUBE
+
+  # Temporary folder for processing
+  temp: /tmp/video_intelligence
+
+# ============================================================================
+# PROCESSING
+# ============================================================================
+processing:
+  # Mode: manual (run on demand) or watch (auto-process new files)
+  mode: manual
+
+  # Batch size: auto (process all in input) or specific number
+  batch_size: auto
+
+  # CPU workers for parallel processing
+  cpu_workers: 36
+
+  # GPU batch size for inference
+  gpu_batch_size: 16
+
+  # Enable small batch optimization (less logging overhead)
+  small_batch_optimization: true
+
+  # Minimum videos to show detailed progress bar
+  min_videos_for_progress: 5
+
+  # Video file extensions to process
+  video_extensions:
+    - .mp4
+    - .mov
+    - .avi
+    - .mkv
+    - .webm
+
+# ============================================================================
+# MODELS
+# ============================================================================
+models:
+  # Whisper model: tiny, base, small, medium, large
+  # medium = good balance of speed/accuracy
+  whisper:
+    model_name: medium
+    device: cuda
+    compute_type: float16
+
+  # CLIP model for visual categorization
+  clip:
+    model_name: ViT-B/32
+    device: cuda
+
+  # Face detection/recognition
+  face:
+    detection_model: retinaface_r50_v1  # InsightFace model
+    recognition_model: arcface_r100_v1   # Face embeddings
+    detection_threshold: 0.8             # Min confidence for face detection
+    device: cuda
+
+  # OCR
+  ocr:
+    languages: [es, en]  # Spanish and English
+    gpu: true
+    confidence_threshold: 0.5
+
+# ============================================================================
+# ANALYSIS PARAMETERS
+# ============================================================================
+analysis:
+  # Frame sampling
+  frames:
+    count_per_video: 30           # Frames to extract per video
+    method: uniform               # uniform or keyframe
+    save_samples: false           # Save frames to disk (for debugging)
+
+  # Face clustering
+  face_clustering:
+    algorithm: dbscan             # dbscan or agglomerative
+    eps: 0.6                      # DBSCAN epsilon (face similarity threshold)
+    min_samples: 2                # Minimum faces to form cluster
+    metric: cosine                # Distance metric
+
+  # Theme classification
+  themes:
+    confidence_threshold: 0.6     # Minimum confidence to assign theme
+    fallback_theme: Otros         # Theme when confidence too low
+
+  # Audio processing
+  audio:
+    enable_transcription: true
+    speech_detection_threshold: 0.3  # Energy threshold for speech detection
+    sample_duration: 30           # Seconds to sample for speech detection
+
+  # OCR
+  text_extraction:
+    enable: true
+    max_frames: 10                # Max frames to run OCR on
+
+# ============================================================================
+# THEMES
+# ============================================================================
+themes:
+  # List of themes to detect (order = priority if multiple match)
+  categories:
+    - Comedia
+    - Tutoriales
+    - Sketches
+    - Vlogs
+    - Entrevistas
+    - Outdoor
+    - Producto_Review
+    - Talking_Head
+    - Otros
+
+  # CLIP prompts for each theme
+  prompts:
+    Comedia:
+      - comedy sketch
+      - funny video
+      - humor content
+      - comedic performance
+      - laughing people
+
+    Tutoriales:
+      - educational tutorial
+      - how-to video
+      - teaching content
+      - demonstration
+      - instructional video
+
+    Sketches:
+      - short film
+      - dramatic sketch
+      - acting performance
+      - cinematic scene
+      - scripted content
+
+    Vlogs:
+      - vlog
+      - personal video diary
+      - daily life video
+      - behind the scenes
+      - casual talking
+
+    Entrevistas:
+      - interview
+      - conversation
+      - two people talking
+      - q and a
+      - discussion
+
+    Outdoor:
+      - outdoor scene
+      - nature video
+      - outside
+      - landscape
+      - street scene
+
+    Producto_Review:
+      - product review
+      - unboxing
+      - product demonstration
+      - showcase item
+
+    Talking_Head:
+      - person talking to camera
+      - direct address
+      - single person speaking
+      - monologue video
+
+# ============================================================================
+# FILE ORGANIZATION
+# ============================================================================
+organization:
+  # Operation: move or copy
+  operation: move
+
+  # Create backup before moving
+  create_backup: false
+
+  # Month names in Spanish
+  month_names:
+    1: Enero
+    2: Febrero
+    3: Marzo
+    4: Abril
+    5: Mayo
+    6: Junio
+    7: Julio
+    8: Agosto
+    9: Septiembre
+    10: Octubre
+    11: Noviembre
+    12: Diciembre
+
+  # Date extraction priority
+  date_sources:
+    - exif          # EXIF metadata (most reliable)
+    - filename      # Parse from filename
+    - file_modified # File modification date (fallback)
+
+  # Folder for videos without detectable date
+  no_date_folder: Sin_Fecha
+
+  # Special folders
+  special_folders:
+    duplicates: _ESPECIALES/Duplicados
+    long_videos: _ESPECIALES/Videos_Largos_3min+
+    review_needed: _ESPECIALES/Revisar_Manual
+
+# ============================================================================
+# DUPLICATE DETECTION
+# ============================================================================
+duplicates:
+  # Enable duplicate detection via MD5 hash
+  enable: true
+
+  # Action: skip, move_to_folder, or ask
+  action: move_to_folder
+
+  # Compare: hash_only or hash_and_metadata
+  method: hash_only
+
+# ============================================================================
+# THUMBNAILS
+# ============================================================================
+thumbnails:
+  # Generate video thumbnails
+  generate_video_thumbs: true
+  video_thumb_size: [320, 180]  # Width x Height
+
+  # Generate face cluster thumbnails
+  generate_face_thumbs: true
+  face_thumb_size: [128, 128]
+
+  # JPEG quality (1-100)
+  quality: 85
+
+# ============================================================================
+# REPORTING
+# ============================================================================
+reporting:
+  # Generate text report per batch
+  generate_text_report: true
+
+  # Generate CSV export per batch
+  generate_csv_export: true
+
+  # Keep all historical reports
+  keep_history: true
+
+  # Report detail level: minimal, normal, verbose
+  detail_level: normal
+
+# ============================================================================
+# LOGGING
+# ============================================================================
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+
+  # Log to file
+  file_logging: true
+  log_dir: _ANALYSIS/logs
+
+  # Log rotation
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+
+  # Console output
+  console_logging: true
+  console_level: INFO
+
+# ============================================================================
+# DATABASE
+# ============================================================================
+database:
+  # SQLite database path (relative to analysis folder)
+  path: _ANALYSIS/database/analysis.db
+
+  # Enable WAL mode (better concurrency)
+  wal_mode: true
+
+  # Vacuum on startup (optimize database)
+  vacuum_on_startup: false
+
+  # Backup database before each run
+  auto_backup: true
+  backup_dir: _ANALYSIS/database/backups
+
+# ============================================================================
+# PERFORMANCE
+# ============================================================================
+performance:
+  # GPU memory management
+  gpu:
+    memory_fraction: 0.9  # Use 90% of available GPU memory
+    allow_growth: true
+
+  # CPU affinity (leave some cores for OS)
+  cpu:
+    max_workers: 36
+    reserve_cores: 2  # Cores to leave for OS
+
+  # Batch processing
+  batch:
+    video_batch_size: 10     # Videos to process before DB commit
+    frame_batch_size: 32     # Frames to process together on GPU
+    embedding_batch_size: 64 # Embeddings to process together
+
+# ============================================================================
+# ERROR HANDLING
+# ============================================================================
+error_handling:
+  # Continue on error or stop
+  continue_on_error: true
+
+  # Max errors before aborting batch
+  max_errors_per_batch: 10
+
+  # Retry failed videos
+  retry_on_failure: false
+  max_retries: 1
+
+  # Move problematic videos to review folder
+  move_failed_videos: true
+
+# ============================================================================
+# NOTIFICATIONS (future feature)
+# ============================================================================
+notifications:
+  enable: false
