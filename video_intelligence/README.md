@@ -21,16 +21,23 @@ Sistema de análisis y organización automática de videos usando IA. Procesa co
 ## Requisitos
 
 - Ubuntu 24.04 LTS (o similar)
-- Python 3.11+
-- NVIDIA GPU con CUDA 12.x (recomendado, funciona sin GPU pero más lento)
+- Python 3.12+
+- NVIDIA GPU con CUDA 12.6+ (recomendado, funciona sin GPU pero más lento)
 - FFmpeg 6.x
 - 8GB+ RAM (16GB+ recomendado)
+
+### Entorno actual de produccion
+
+- **VM 106** en Proxmox (192.168.1.106, user: smith)
+- 40 threads, 112 GB RAM, GTX 1080 Ti (11 GB VRAM)
+- NVIDIA driver 580.126.20 (legacy), CUDA 12.6, PyTorch 2.10.0+cu126
+- SSD USB 477 GB montado en `/mnt/videos/`
 
 ## Instalación
 
 ```bash
 # Clonar o copiar el proyecto
-cd /home/claude/video_intelligence
+cd ~/Clasificacion-de-Videos/video_intelligence
 
 # Ejecutar instalador
 chmod +x install.sh
@@ -277,7 +284,9 @@ mv /mnt/video_hub/01_PROCESADOS/2023/ /mnt/video_hub/_SUBIDO_A_NUBE/
 | 50     | ~1.5-2 hours   |
 | 100    | ~2.5-3.5 hours |
 
-*Con GPU NVIDIA GTX 1080 Ti. Sin GPU puede ser 3-5x más lento.*
+*Con GPU NVIDIA GTX 1080 Ti (11 GB VRAM), driver 580, CUDA 12.6, PyTorch 2.10. Sin GPU puede ser 3-5x más lento.*
+
+> **Nota**: GTX 1080 Ti requiere driver 580.xx (legacy). Drivers 590+ ya no soportan esta GPU.
 
 ## Solución de Problemas
 

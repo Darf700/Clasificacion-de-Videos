@@ -1,0 +1,138 @@
+{
+  "project": "Video Intelligence System",
+  "repo": "https://github.com/Darf700/Clasificacion-de-Videos.git",
+  "branch": "main",
+  "last_session": "2026-02-23",
+  "last_commit": "0ab6123 - Fix PyTorch 2.10 compatibility: total_mem -> total_memory",
+
+  "infrastructure": {
+    "proxmox_host": {
+      "ip": "100.123.113.126",
+      "access": "ssh root@100.123.113.126 (Tailscale)",
+      "ram": "128 GB",
+      "disks": {
+        "sda": "931 GB HDD (data-hdd LVM)",
+        "sdb": "931 GB SSD (pve system + local-lvm)",
+        "nvme0n1": "477 GB NVMe (Falcon LVM)"
+      },
+      "vms_documentation": {
+        "recrear_script": "/root/recrear-vms.sh",
+        "backup_configs": "/root/vm-backup-configs/",
+        "backup_json": "/root/backup-vms/"
+      }
+    },
+    "vm_106": {
+      "name": "video-intelligence",
+      "ip": "192.168.1.106",
+      "user": "smith",
+      "ssh": "ssh root@100.123.113.126 then ssh smith@192.168.1.106",
+      "os": "Ubuntu 24.04 LTS",
+      "cpu": "40 threads (20 cores x 2 sockets, host passthrough)",
+      "ram": "112 GB (114688 MB)",
+      "disk": "150 GB SSD (local-lvm)",
+      "gpu": "NVIDIA GeForce GTX 1080 Ti (11 GB VRAM, PCIe passthrough)",
+      "gpu_driver": "nvidia-driver-580 (580.126.20) - legacy branch for GTX 1080 Ti",
+      "cuda": "CUDA 12.6 (V12.6.85)",
+      "usb_ssd": {
+        "device": "/dev/sdb",
+        "mount": "/mnt/videos",
+        "filesystem": "ext4",
+        "label": "videos",
+        "size": "477 GB (445 GB free)",
+        "fstab": "auto-mounted with nofail",
+        "usb_id": "174c:55aa (ASMedia USB-SATA bridge)"
+      }
+    },
+    "other_vms": {
+      "101_vm-101": "stopped - 16GB RAM, 150GB disk",
+      "103_smith-mvp": "stopped - 8GB RAM, 50GB NVMe",
+      "104_kali-pentest": "stopped - 8GB RAM, 80GB disk",
+      "105_smith-test": "stopped - 32GB RAM, 50GB NVMe"
+    }
+  },
+
+  "vm_106_software": {
+    "python": "3.12.3",
+    "venv": "~/Clasificacion-de-Videos/video_intelligence/venv",
+    "pytorch": "2.10.0+cu126",
+    "clip": "1.0 (OpenAI, from GitHub)",
+    "whisper": "20250625 (openai-whisper)",
+    "insightface": "0.7.3 (buffalo_l model)",
+    "easyocr": "1.7.2",
+    "opencv": "4.13.0",
+    "onnxruntime_gpu": "1.24.2",
+    "ffmpeg": "6.1.1",
+    "transformers": "5.2.0",
+    "pytest": "9.0.2"
+  },
+
+  "project_structure": {
+    "root": "~/Clasificacion-de-Videos/video_intelligence/",
+    "main": "main.py",
+    "config": "config.yaml",
+    "modules": [
+      "clip_analyzer.py",
+      "date_extractor.py",
+      "db_manager.py",
+      "face_clusterer.py",
+      "face_detector.py",
+      "file_organizer.py",
+      "metadata_extractor.py",
+      "ocr_processor.py",
+      "theme_classifier.py"
+    ],
+    "utils": [
+      "gpu_utils.py",
+      "hash_utils.py",
+      "logging_utils.py",
+      "video_utils.py"
+    ],
+    "tests": "tests/ (170 tests, all passing)",
+    "schemas": "schemas/schema.sql"
+  },
+
+  "test_results": {
+    "total": 170,
+    "passed": 170,
+    "failed": 0,
+    "environment": "VM 106 with GPU"
+  },
+
+  "current_state": {
+    "processing": "Running in screen session 'videointel' on VM 106",
+    "videos": "46 test videos (1.2 GB) in /mnt/videos/",
+    "config": "batch processes all 46, operation=copy (non-destructive)",
+    "monitor_command": "ssh root@100.123.113.126 ssh smith@192.168.1.106 tail -50 /mnt/videos/_run.log",
+    "screen_attach": "ssh -t root@100.123.113.126 ssh -t smith@192.168.1.106 screen -r videointel"
+  },
+
+  "known_issues": {
+    "gpu_driver_legacy": "GTX 1080 Ti requires driver 580.xx (legacy). Driver 590+ drops support.",
+    "pytorch_api_change": "PyTorch 2.10 renamed total_mem to total_memory (fixed in commit 0ab6123)",
+    "insightface_warning": "FutureWarning on estimate() deprecated - cosmetic only",
+    "host_ram_pressure": "VM 106 uses 112GB of 128GB host RAM. Host crashed once from OOM. Reduced from 120GB to 112GB.",
+    "usb_ssd_data_loss": "Original SSD with videos was wiped (all zeros). Had to re-download videos."
+  },
+
+  "session_history": [
+    {
+      "session": 1,
+      "date": "2026-02-22",
+      "summary": "Built complete Video Intelligence System (22+ files). Code quality audit with bug fixes."
+    },
+    {
+      "session": 2,
+      "date": "2026-02-23",
+      "summary": "Robustness fixes (face_clusterer, face_detector, ocr_processor). Created 170 tests. Pushed to GitHub. Set up Proxmox VM 106 with GPU passthrough, CUDA 12.6, all Python deps. Started first processing run."
+    }
+  ],
+
+  "next_steps": [
+    "Check processing results from the 46-video test run",
+    "Review organized output in /mnt/videos/_PROCESADOS/",
+    "Check reports in /mnt/videos/_ANALYSIS/reports/",
+    "Inspect database for classification accuracy",
+    "If results look good, process full 2,500 video collection",
+    "Consider reducing VM RAM if host stability is a concern"
+  ]
+}
